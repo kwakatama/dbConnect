@@ -20,7 +20,7 @@ namespace dbConnect
 {
     class Program
     {
-
+        //global connection string to establish link to SQL SERVER and DB
         public static string connectionString = "user id=username;" +
                                                  "password=password;server=DESKTOP-SDB5USS;" +
                                                  "Trusted_Connection=yes;" +
@@ -28,11 +28,13 @@ namespace dbConnect
                                                  "connection timeout=30";
 
 
+        //main method
         static void Main(string[] args)
         {           
             empRead();           
         }
 
+        //executes an existing SQL script to insert multimple values into a table
         public static void bulkInsert()
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -53,6 +55,8 @@ namespace dbConnect
 
         }
 
+        //accepts parameters for the employee table then runs a sql query to insert into the employee table
+        //Note: create variant that accepts object as parameter
         public static void empInsert(string first, string last)
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -71,6 +75,7 @@ namespace dbConnect
 
         }
 
+        //accepts parameters for the project table then runs a sql query to insert into the project table. Followed by a query of the table to be printed
         public static void projInsert(string name, string desc, DateTime start, DateTime end)
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -98,6 +103,7 @@ namespace dbConnect
 
         }
 
+        //reads and prints the employee table
         public static void empRead()
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -119,6 +125,7 @@ namespace dbConnect
 
         }
 
+        //reads the project table
         public static void projRead()
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -148,6 +155,7 @@ namespace dbConnect
         }
 
 
+        //reads the dept table by executing an existing SQL script from a file
         public static void deptRead()
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -178,6 +186,7 @@ namespace dbConnect
 
         }
 
+        //opens the connection to the DB. With exception handling
         public static void connect(SqlConnection conn)
         {
             try
@@ -190,6 +199,7 @@ namespace dbConnect
             }
         }
 
+        //closes the connection to the DB.With exception handling
         public static void disconnect(SqlConnection conn)
         {
             try
@@ -202,6 +212,7 @@ namespace dbConnect
             }
         }
 
+        //executes a SQL command
         public static void execute(SqlCommand comm)
         {
             try
@@ -216,12 +227,14 @@ namespace dbConnect
         }
     }
 
+    //employee parent class
     public class cEmployee
     {
         public string fname;
         public string lname;
     }
 
+    //project  parent class
     public class cProject
     {
         public string pName;
@@ -230,35 +243,41 @@ namespace dbConnect
         public DateTime pEnddate;
     }
 
+    //department  parent class
     public class cDept
     {
         public string dName;
     }
 
+    //job  parent class
     public class cJob
     {
         public string jTitle;
         public string jDesc;
     }
 
+    //employee details parent class
     public class empDetails
     {
         public int emID;
         public int jobID;
     }
 
+    //project employees  parent class
     public class projEmployees
     {
         public int projID;
         public int emID;        
     }
 
+    //project departments  parent class
     public class projDepts
     {
         public int projID;
         public int deptID;
     }
 
+    //contains methods for handling null value reading from DB
     public static class DataReaderExtensions
     {
         public static string GetStringOrNull(this IDataReader reader, int ordinal)
