@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace dbConnect
 {
@@ -30,8 +31,28 @@ namespace dbConnect
 
         //main method
         static void Main(string[] args)
-        {           
-            empRead();           
+        {
+            cEmployee emp = new cEmployee();
+
+             Console.WriteLine("Enter first name: ");
+             emp.fname =  Console.ReadLine();
+             Console.WriteLine("Enter last name: ");
+             emp.lname =  Console.ReadLine();
+
+
+
+             empIN(emp);
+
+
+             empRead();    
+
+
+           /* Console.WriteLine("Enter Project ID: ");
+            string proj = Console.ReadLine();
+            Console.WriteLine("Enter Job ID: ");
+            string job = Console.ReadLine();
+
+            selectBY(proj, job);*/    
         }
 
         //executes an existing SQL script to insert multimple values into a table
@@ -56,7 +77,6 @@ namespace dbConnect
         }
 
         //accepts parameters for the employee table then runs a sql query to insert into the employee table
-        //Note: create variant that accepts object as parameter
         public static void empInsert(string first, string last)
         {
             SqlConnection myConnection = new SqlConnection(connectionString);
@@ -71,6 +91,25 @@ namespace dbConnect
 
             Console.ReadLine();
             
+
+
+        }
+
+        //accepts an object as a parameter for the employee table then runs a sql query to insert into the employee table
+        public static void empIN(cEmployee employee)
+        {
+            SqlConnection myConnection = new SqlConnection(connectionString);
+
+            connect(myConnection);
+
+            SqlCommand cmd = new SqlCommand("INSERT INTO employee(emp_FName, emp_LName) VALUES('" + employee.fname + "', '" + employee.lname + "')", myConnection);
+
+            execute(cmd);
+
+            disconnect(myConnection);
+
+            Console.ReadLine();
+
 
 
         }
@@ -114,7 +153,6 @@ namespace dbConnect
             {
                 while (reader.Read())
                 {
-                    //Console.WriteLine(reader.GetString(1) + " " + reader.GetString(2));
                     Console.WriteLine(reader.GetStringOrNull(1) + " " + reader.GetStringOrNull(2));
                 }
             }
@@ -143,7 +181,6 @@ namespace dbConnect
             {
                 while (reader.Read())
                 {
-                    //Console.WriteLine(reader.GetString(1) + " " + reader.GetString(2) + reader.GetDateTime(3).ToString() + reader.GetDateTime(4).ToString());
                     Console.WriteLine(reader.GetStringOrNull(1) + "\t\t" + reader.GetStringOrNull(2) + "\t\t" +  reader.GetValue(3).ToString() + "\t\t" + reader.GetValue(4).ToString());
                 }
             }
@@ -175,7 +212,45 @@ namespace dbConnect
             {
                 while (reader.Read())
                 {
-                    //Console.WriteLine(reader.GetString(1) + " " + reader.GetString(2) + reader.GetDateTime(3).ToString() + reader.GetDateTime(4).ToString());
+                    Console.WriteLine(reader.GetValue(0) + "\t\t" + reader.GetValue(1));
+                }
+            }
+
+            disconnect(myConnection);
+
+            Console.ReadLine();
+
+        }
+
+        //*Select every employee working on project xxx and has job type yyy. Accepts parameters from user and modifies sql script before running
+        public static void selectBY(string projID, string jobID)
+        {
+            SqlConnection myConnection = new SqlConnection(connectionString);
+            connect(myConnection);
+
+            string script = File.ReadAllText(@"Scripts\Select_By_Project_And_Job_Generic.sql");
+
+            string pattProj = "xxx";
+            string pattJob = "yyy";
+
+            Regex rgx = new Regex(pattProj);
+            Regex rgy = new Regex(pattJob);
+
+            script = rgx.Replace(script, projID);
+            script = rgy.Replace(script, jobID);
+
+            SqlCommand read = new SqlCommand(script, myConnection);
+            SqlDataReader reader = read.ExecuteReader();
+
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                Console.Write(reader.GetName(i) + "\t\t");
+            }
+            Console.WriteLine();
+
+            {
+                while (reader.Read())
+                {
                     Console.WriteLine(reader.GetValue(0) + "\t\t" + reader.GetValue(1));
                 }
             }
